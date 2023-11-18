@@ -1,0 +1,31 @@
+#!/bin/bash
+# The shebang line specifies the interpreter to be used, in this case, Bash.
+
+echo -n "Would you like to sort the processes output by memory or CPU? (m/c) "
+# Print a prompt without a newline, asking the user to choose sorting by memory (m) or CPU (c).
+read sortby
+# Read the user's input into the variable 'sortby'.
+
+echo -n "How many results do you want to display? "
+# Print a prompt without a newline, asking the user to specify the number of results to display.
+read lines
+# Read the user's input into the variable 'lines'.
+
+if [ "$sortby" = "m" ]
+then
+    # If the user chose to sort by memory (m),
+    ps aux --sort -rss | grep -i `whoami` | head -n "$lines"
+    # List all processes with detailed information, sort by resident set size (memory usage),
+    # filter only the processes of the current user, and display the specified number of lines.
+elif [ "$sortby" = "c" ]
+then
+    # If the user chose to sort by CPU (c),
+    ps aux --sort -%cpu | grep -i `whoami` | head -n "$lines"
+    # List all processes with detailed information, sort by CPU usage,
+    # filter only the processes of the current user, and display the specified number of lines.
+else
+    # If the user provided no valid input,
+    echo "No input provided. Exiting"
+    # Display an error message and exit the script.
+fi
+# End of the script.
