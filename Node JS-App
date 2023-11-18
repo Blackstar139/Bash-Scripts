@@ -1,0 +1,67 @@
+#!/bin/bash
+# Bash script to prepare the environment for a Node.js application
+
+# Update the package list
+apt update
+
+# Install necessary tools
+echo "install node, npm, curl, wget, net-tools"
+apt install -y nodejs npm curl net-tools  
+
+# Pause for 15 seconds
+sleep 15
+
+# Display section break
+echo ""
+echo "################"
+echo ""
+
+# Prompt user for log directory
+echo -n "Set log directory location for the application (absolute path): "
+read LOG_DIRECTORY
+if [ -d $LOG_DIRECTORY ]
+then
+  echo "$LOG_DIRECTORY already exists"
+else
+  mkdir -p $LOG_DIRECTORY
+  echo "A new directory $LOG_DIRECTORY has been created"
+fi
+
+# Display Node.js version
+node_version=$(node --version)
+echo "NodeJS version $node_version installed"
+
+# Display npm version
+npm_version=$(npm --version)
+echo "NPM version $npm_version installed"
+
+# Display section break
+echo ""
+echo "################"
+echo ""
+
+# Fetch Node.js project archive from S3 bucket
+wget https://node-envvars-artifact.s3.eu-west-2.amazonaws.com/bootcamp-node-envvars-project-1.0.0.tgz
+
+# Extract the project archive to ./package folder
+tar zxvf ./bootcamp-node-envvars-project-1.0.0.tgz
+
+# Set environment variables
+export APP_ENV=dev
+export DB_PWD=mysecret
+export DB_USER=myuser 
+
+# Change to the package directory
+cd package
+
+# Install application dependencies
+npm install
+
+# Start the Node.js application in the background
+node server.js &
+
+# Display that Node.js process is running
+ps aux | grep node | grep -v grep
+
+# Display that Node.js is running on port 3000
+netstat -ltnp | grep :3000
